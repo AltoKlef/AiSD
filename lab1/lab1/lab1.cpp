@@ -1,6 +1,12 @@
 ﻿#include <iostream>
-#include <Windows.h>
+#include <conio.h>
 using namespace std;
+class OutOfBoundsException : public runtime_error {
+public:
+	OutOfBoundsException(const string& message) : runtime_error(message) {
+		cerr << message;
+	}
+};
 template <class T>
 class Node {
 public:
@@ -97,13 +103,20 @@ public:
 	}
 
 	T operator [] (int index) { //перегрузим скобки
-		return get_index(index);
+		if (index >= 0 && index < length) {
+			return get_index(index);
+		}
+		else {
+			throw OutOfBoundsException("Ошибка: Индекс выходит за пределы списка.");
+		}
 	}
 	int get_length() {
 		return length;
 	}
 
+
 	T insert(int index, T data) {//добавить по индексу
+		if (index >= 0 && index < length){
 		Node<T>* right = get_node(index);
 		if (right == NULL) {
 			return add_last(data);
@@ -121,29 +134,37 @@ public:
 		left->next = ptr;
 		right->prev = ptr;
 		length++;
-		return ptr->data;
+		return ptr->data;}
+		else {
+			throw OutOfBoundsException("Ошибка: Индекс выходит за пределы списка.");
+		}
 	}
 	void erase(int index) {//удалить по индексу
-		Node<T>* ptr = get_node(index);
-		if (ptr == NULL)
-			return;
+		if (index >= 0 && index < length) {
+			Node<T>* ptr = get_node(index);
+			if (ptr == NULL)
+				return;
 
-		if (ptr->prev == NULL) {
-			delete_first();
-			return;
+			if (ptr->prev == NULL) {
+				delete_first();
+				return;
+			}
+
+			if (ptr->next == NULL) {
+				delete_last();
+				return;
+			}
+
+			Node<T>* left = ptr->prev;
+			Node<T>* right = ptr->next;
+			left->next = right;
+			right->prev = left;
+			length--;
+			delete ptr;
 		}
-
-		if (ptr->next == NULL) {
-			delete_last();
-			return;
+		else {
+			throw OutOfBoundsException("Ошибка: Индекс выходит за пределы списка.");
 		}
-
-		Node<T>* left = ptr->prev;
-		Node<T>* right = ptr->next;
-		left->next = right;
-		right->prev = left;
-		length--;
-		delete ptr;
 	}
 private:
 	Node<T>* get_node(int index) { //в случае если нужен сам узел, а не данные в нем
@@ -174,12 +195,100 @@ public:
 	}
 };
 //динамический массив
-class LinkedList {
+template <class T>
+class DinArr {
+private:
+	int capacity; // Размер массива
+	int length;   // Текущее количество элементов
+	T* arr;       // Динамический массив
+public:
+	DinArr() {
+		length = 0;
+		capacity = 20; //20 будет магическим числом
+		arr = new T[capacity];
+	}
 
+	DinArr(int initialSize) {
+		length = initialSize;
+		capacity = length + 20;
+		arr = new T[capacity];
+	}
+
+	~DinArr() {
+		delete[] arr;
+	}
+
+	T& operator[](int index) {
+		if (index >= 0 && index < length) {
+			return arr[index];
+		}
+		else {
+			cerr << "Индекс выходит за пределы массива";
+			return arr[index];
+			//throw OutOfBoundsException("Ошибка: Индекс выходит за пределы массива.");
+		}
+		
+	}
+	void push_back(const T& value) {
+
+		if (length >= capacity) {
+			// Увеличиваем размер массива, если не хватает места
+			capacity += 20;
+			T* temp = new T[capacity];// временный массив
+			for (int i = 0; i < length; i++) {
+				temp[i] = arr[i];
+			}
+			delete[] arr;//уадляем прошлую версию массива
+			arr = temp;
+			arr[length] = value;
+			length++;		   
+		}
+		else {
+			arr[length] = value;
+			length++;
+		}
+	}
+	void add(int index, const T& value) {
+		if (index >= 0 && index <= length) {
+			if (length >= capacity) {
+				capacity += 20;
+				T* temp = new T[capacity];
+				for (int i = 0; i < length; i++) {
+					temp[i] = arr[i];
+				}
+				delete[] arr;
+				arr = temp;
+			}
+			// Сдвигаем элементы вправо
+			for (int i = length; i > index; i--) {
+				arr[i] = arr[i - 1];
+			}
+			arr[index] = value;
+			length++;
+		}
+		else {
+			cerr << "Ошибка: Индекс выходит за пределы массива";
+			//throw OutOfBoundsException("Ошибка: Индекс выходит за пределы массива.");
+		}
+	}
+	void remove(int index) {
+		if (index >= 0 && index < length) {
+			for (int i = index; i < length - 1; i++) {
+				arr[i] = arr[i + 1];
+			}
+			length--;
+		}
+		else {
+			cerr << "Ошибка: Индекс выходит за пределы массива." << endl;
+		}
+	}
+	// Получение текущей длины массива
+	int size() const {
+		return length;
+	}
 };
-int main()
-{
-	setlocale(LC_ALL, "ru");
+void testspisok() {
+	system("cls");
 	List<string> lst;
 	cout << "Тестируем строчный список" << endl;
 	lst.add_first("Альбедо");
@@ -191,7 +300,6 @@ int main()
 	}
 	cout << "Длина списка: " << lst.get_length() << endl;
 	cout << "Великое деланье завершено" << endl << "А что если..?" << endl << endl;
-
 
 	lst.insert(3, "добавить масла");
 	for (int i = 0; i < lst.get_length(); i++) {
@@ -208,5 +316,44 @@ int main()
 	}
 	cout << "Длина списка: " << lst.get_length() << endl;
 	cout << "Получилось!" << endl << endl;
+}
+void testmassiv() {
+	system("cls");
+	DinArr<short> arr;
+	cout << "Тестируем массив" << endl;
+	cout << "Длина массива:" << arr.size() << endl;
+	int num = 42;
+	arr.push_back(num);
+	arr.push_back(27);
+	arr.push_back(1337);
+	for (int i = 0; i < arr.size(); i++) {
+		cout << "arr[" << i << "] = " << arr[i] << endl;
+	}
+	cout << "Длина массива:" << arr.size() << endl;
+	cout << endl << "Добавим элемент на 1 позицию" << endl;
+	arr.add(1, 78);
+	for (int i = 0; i < arr.size(); i++) {
+		cout << "arr[" << i << "] = " << arr[i] << endl;
+	}
+	cout << "Длина массива:" << arr.size() << endl;
+	arr.add(9, 3);
+
+	cout << endl << "Удаляем элемент 2" << endl;
+	arr.remove(2);
+	for (int i = 0; i < arr.size(); i++) {
+		cout << "arr[" << i << "] = " << arr[i] << endl;
+	}
+	cout << "Длина массива:" << arr.size() << endl;
+
+}
+int main()
+{
+	setlocale(LC_ALL, "ru");
+	testspisok();
+	cout << "Нажмите любую кнопку чтобы продолжить";
+	char m=_getch();
+	testmassiv();
+	
+	
 	return 0;
 }
