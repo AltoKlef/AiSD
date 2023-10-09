@@ -250,7 +250,7 @@ public:
 		}
 	}
 	void add(int index, const T& value) {
-		if (index >= 0 && index <= length) {
+		if (index >= 0 && index < length) {
 			if (length >= capacity) {
 				capacity += 20;
 				T* temp = new T[capacity];
@@ -287,7 +287,66 @@ public:
 		return length;
 	}
 };
+// Проверка, является ли символ оператором
+bool isOperator(const string& token) {
+	return token == "+" || token == "-" || token == "*" || token == "/" || token == "^";
+}
 
+// Проверка, является ли символ функцией
+bool isFunction(const string& token) {
+	return token == "sin" || token == "cos";
+}
+
+// Определение приоритета оператора
+int getPrecedence(const string& token) {
+	if (token == "+" || token == "-") return 1;
+	if (token == "*" || token == "/") return 2;
+	if (token == "^") return 3;
+	return 0; // Для функций и чисел
+}
+
+// Преобразование инфиксного выражения в обратную польскую запись
+//используется двусвязный список в качестве стека
+string infixToRPN(const string& infixExpression) {
+	istringstream iss(infixExpression);
+	List<string> operators;
+	string output;
+	string token;
+	while (iss >> token) {
+		if (token == "(") {
+			operators.add_last(token);
+		}
+		else if (token == ")") { //по поводу записи operators[operators.get_length() - 1] 
+			//- это эквивалентно функции top в обычном стеке где мы просто смотрим на самый последний элемент
+			while (operators.get_length() != 0 && operators[operators.get_length() - 1] != "(") {
+				output += operators[operators.get_length() - 1] + " ";
+				operators.delete_last();
+			}
+			operators.delete_last(); // Удаляем открывающую скобку
+		}
+		else if (isOperator(token)) {
+			while (operators.get_length() != 0 && isOperator(operators[operators.get_length() - 1]) &&
+				getPrecedence(token) <= getPrecedence(operators[operators.get_length() - 1])) {
+				output += operators[operators.get_length() - 1] + " ";
+				operators.delete_last();
+			}
+			operators.add_last(token);
+		}
+		else if (isFunction(token)) {
+			operators.add_last(token);
+		}
+		else {
+			output += token + " "; // Элемент - число
+		}
+	}
+
+	while (operators.get_length() != 0) {
+		output += operators[operators.get_length() - 1] + " ";
+		operators.delete_last();
+	}
+
+	return output;
+}
 void testspisok() {
 	system("cls");
 	List<string> lst;
@@ -336,9 +395,8 @@ void testmassiv() {
 	for (int i = 0; i < arr.size(); i++) {
 		cout << "arr[" << i << "] = " << arr[i] << endl;
 	}
-	cout << "Длина массива:" << arr.size() << endl;
-	arr.add(9, 3);
-
+ 	cout << "Длина массива:" << arr.size() << endl;
+	//arr.add(9, 3);//если расскоментировать строку то можно вызвать предусмотренное в классе исключение
 	cout << endl << "Удаляем элемент 2" << endl;
 	arr.remove(2);
 	for (int i = 0; i < arr.size(); i++) {
@@ -347,76 +405,28 @@ void testmassiv() {
 	cout << "Длина массива:" << arr.size() << endl;
 
 }
-// Проверка, является ли символ оператором
-bool isOperator(const string& token) {
-	return token == "+" || token == "-" || token == "*" || token == "/" || token == "^";
+void teststack() {
+	system("cls");
+	string infixExpression = "3 + 2 * ( 1 - sin ( 4 ^ 2 ) ) / 2 + cos ( 3 )";
+  	cout << "Тестовая инфиксная строка: " << infixExpression<<endl;
+	string rpnExpression = infixToRPN(infixExpression);
+	cout << "Обратная польская запись: " << rpnExpression << endl<<"Введите собственную строку: ";
+	getline(cin,infixExpression);
+	rpnExpression = infixToRPN(infixExpression);
+	cout << "Вот ваша строка в обратной польской записи: " << rpnExpression;
 }
 
-// Проверка, является ли символ функцией
-bool isFunction(const string& token) {
-	return token == "sin" || token == "cos";
-}
-
-// Определение приоритета оператора
-int getPrecedence(const string& token) {
-	if (token == "+" || token == "-") return 1;
-	if (token == "*" || token == "/") return 2;
-	if (token == "^") return 3;
-	return 0; // Для функций и чисел
-}
-
-// Преобразование инфиксного выражения в обратную польскую запись
-//используется двусвязный список в качестве стека
-string infixToRPN(const string& infixExpression) {
-	istringstream iss(infixExpression);
-	List<string> operators;
-	string output;
-	string token;
-	while (iss >> token) {
-		if (token == "(") {
-			operators.add_last(token);
-		}
-		else if (token == ")") { //по поводу записи operators[operators.get_length() - 1] 
-								 //- это эквивалентно функции top в обычном стеке где мы просто смотрим на самый последний элемент
-			while (operators.get_length()!=0 && operators[operators.get_length() - 1] != "(") {
-				output += operators[operators.get_length() - 1] + " ";
-				operators.delete_last();
-			}
-			operators.delete_last(); // Удаляем открывающую скобку
-		}
-		else if (isOperator(token)) {
-			while (operators.get_length()!=0 && isOperator(operators[operators.get_length() - 1]) && 
-				getPrecedence(token) <= getPrecedence(operators[operators.get_length() - 1])) {
-				output += operators[operators.get_length() - 1] + " ";
-				operators.delete_last();
-			}
-			operators.add_last(token);
-		}
-		else if (isFunction(token)) {
-			operators.add_last(token);
-		}
-		else {
-			output += token + " "; // Элемент - число
-		}
-	}
-
-	while (operators.get_length()!=0) {
-		output += operators[operators.get_length() - 1] + " ";
-		operators.delete_last();
-	}
-
-	return output;
-}
 int main()
 {
 	setlocale(LC_ALL, "ru");
-	//testspisok(); 
-	//cout << "Нажмите любую кнопку чтобы продолжить";
-	//char m=_getch();
-	//testmassiv();
-	string infixExpression = "3 + f 2 * ( 1 - sin ( 4 ^ 2 ) ) / 2 + cos ( 3 )";
-	string rpnExpression = infixToRPN(infixExpression);
-	cout << "Обратная польская запись: " << rpnExpression << endl;
+	testspisok(); 
+	cout << "Нажмите любую кнопку чтобы продолжить";
+	char m=_getch();
+	testmassiv();
+	cout << "Нажмите любую кнопку чтобы продолжить";
+	m = _getch();
+	teststack();
+	
 
 	
 	return 0;
