@@ -1,5 +1,8 @@
 ﻿#include <iostream>
 #include <conio.h>
+#include <cmath>
+#include <string>
+#include <sstream>
 using namespace std;
 class OutOfBoundsException : public runtime_error {
 public:
@@ -107,7 +110,7 @@ public:
 			return get_index(index);
 		}
 		else {
-			throw OutOfBoundsException("Ошибка: Индекс выходит за пределы списка.");
+			throw OutOfBoundsException("Error: the index goes beyond the list");
 		}
 	}
 	int get_length() {
@@ -136,7 +139,7 @@ public:
 		length++;
 		return ptr->data;}
 		else {
-			throw OutOfBoundsException("Ошибка: Индекс выходит за пределы списка.");
+			throw OutOfBoundsException("Error: the index goes beyond the list");
 		}
 	}
 	void erase(int index) {//удалить по индексу
@@ -223,9 +226,7 @@ public:
 			return arr[index];
 		}
 		else {
-			cerr << "Индекс выходит за пределы массива";
-			return arr[index];
-			//throw OutOfBoundsException("Ошибка: Индекс выходит за пределы массива.");
+			throw OutOfBoundsException("Error: accessing uninitialized memory");
 		}
 		
 	}
@@ -267,8 +268,7 @@ public:
 			length++;
 		}
 		else {
-			cerr << "Ошибка: Индекс выходит за пределы массива";
-			//throw OutOfBoundsException("Ошибка: Индекс выходит за пределы массива.");
+			throw OutOfBoundsException("Error: accessing uninitialized memory");
 		}
 	}
 	void remove(int index) {
@@ -279,7 +279,7 @@ public:
 			length--;
 		}
 		else {
-			cerr << "Ошибка: Индекс выходит за пределы массива." << endl;
+			throw OutOfBoundsException("Error: accessing uninitialized memory");
 		}
 	}
 	// Получение текущей длины массива
@@ -287,6 +287,7 @@ public:
 		return length;
 	}
 };
+
 void testspisok() {
 	system("cls");
 	List<string> lst;
@@ -346,14 +347,77 @@ void testmassiv() {
 	cout << "Длина массива:" << arr.size() << endl;
 
 }
+// Проверка, является ли символ оператором
+bool isOperator(const string& token) {
+	return token == "+" || token == "-" || token == "*" || token == "/" || token == "^";
+}
+
+// Проверка, является ли символ функцией
+bool isFunction(const string& token) {
+	return token == "sin" || token == "cos";
+}
+
+// Определение приоритета оператора
+int getPrecedence(const string& token) {
+	if (token == "+" || token == "-") return 1;
+	if (token == "*" || token == "/") return 2;
+	if (token == "^") return 3;
+	return 0; // Для функций и чисел
+}
+
+// Преобразование инфиксного выражения в обратную польскую запись
+//используется двусвязный список в качестве стека
+string infixToRPN(const string& infixExpression) {
+	istringstream iss(infixExpression);
+	List<string> operators;
+	string output;
+	string token;
+	while (iss >> token) {
+		if (token == "(") {
+			operators.add_last(token);
+		}
+		else if (token == ")") { //по поводу записи operators[operators.get_length() - 1] 
+								 //- это эквивалентно функции top в обычном стеке где мы просто смотрим на самый последний элемент
+			while (operators.get_length()!=0 && operators[operators.get_length() - 1] != "(") {
+				output += operators[operators.get_length() - 1] + " ";
+				operators.delete_last();
+			}
+			operators.delete_last(); // Удаляем открывающую скобку
+		}
+		else if (isOperator(token)) {
+			while (operators.get_length()!=0 && isOperator(operators[operators.get_length() - 1]) && 
+				getPrecedence(token) <= getPrecedence(operators[operators.get_length() - 1])) {
+				output += operators[operators.get_length() - 1] + " ";
+				operators.delete_last();
+			}
+			operators.add_last(token);
+		}
+		else if (isFunction(token)) {
+			operators.add_last(token);
+		}
+		else {
+			output += token + " "; // Элемент - число
+		}
+	}
+
+	while (operators.get_length()!=0) {
+		output += operators[operators.get_length() - 1] + " ";
+		operators.delete_last();
+	}
+
+	return output;
+}
 int main()
 {
 	setlocale(LC_ALL, "ru");
-	testspisok();
-	cout << "Нажмите любую кнопку чтобы продолжить";
-	char m=_getch();
-	testmassiv();
-	
+	//testspisok(); 
+	//cout << "Нажмите любую кнопку чтобы продолжить";
+	//char m=_getch();
+	//testmassiv();
+	string infixExpression = "3 + f 2 * ( 1 - sin ( 4 ^ 2 ) ) / 2 + cos ( 3 )";
+	string rpnExpression = infixToRPN(infixExpression);
+	cout << "Обратная польская запись: " << rpnExpression << endl;
+
 	
 	return 0;
 }
