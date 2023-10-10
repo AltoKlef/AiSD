@@ -169,6 +169,37 @@ public:
 			throw OutOfBoundsException("Ошибка: Индекс выходит за пределы списка.");
 		}
 	}
+	void erase_this(const T& value) {//удаляет все узлы с data равным value
+		Node<T>* current = head;
+		int index = 0;
+		while (index<length && current!=NULL) {
+			if (current->data == value) {
+				Node<T>* ptr = get_node(index);
+				if (ptr->prev == NULL) {
+					current = ptr->next;
+					delete_first();
+				}
+
+				else if (ptr->next == NULL) {
+					delete_last();
+				}
+				else{
+					Node<T>* left = ptr->prev;
+					Node<T>* right = ptr->next;
+					left->next = right;
+					right->prev = left;
+					length--;
+					current = ptr->next;
+					delete ptr;
+				}
+				
+			}
+			else {
+				current = current->next;
+				index++;
+			}
+		}
+	}
 private:
 	Node<T>* get_node(int index) { //в случае если нужен сам узел, а не данные в нем
 		Node<T>* ptr;              //аналогично get_index
@@ -307,10 +338,10 @@ int getPrecedence(const string& token) {
 
 // Преобразование инфиксного выражения в обратную польскую запись
 //используется двусвязный список в качестве стека
-string infixToRPN(const string& infixExpression) {
+DinArr<string> infixToRPN(const string& infixExpression) {
 	istringstream iss(infixExpression);
-	List<string> operators;
-	string output;
+	List<string> operators; //будет нашим стеком
+	DinArr<string> output; // будет чисто хранить выходные данные
 	string token;
 	while (iss >> token) {
 		if (token == "(") {
@@ -319,7 +350,7 @@ string infixToRPN(const string& infixExpression) {
 		else if (token == ")") { //по поводу записи operators[operators.get_length() - 1] 
 			//- это эквивалентно функции top в обычном стеке где мы просто смотрим на самый последний элемент
 			while (operators.get_length() != 0 && operators[operators.get_length() - 1] != "(") {
-				output += operators[operators.get_length() - 1] + " ";
+				output.push_back(operators[operators.get_length() - 1]);
 				operators.delete_last();
 			}
 			operators.delete_last(); // Удаляем открывающую скобку
@@ -327,7 +358,7 @@ string infixToRPN(const string& infixExpression) {
 		else if (isOperator(token)) {
 			while (operators.get_length() != 0 && isOperator(operators[operators.get_length() - 1]) &&
 				getPrecedence(token) <= getPrecedence(operators[operators.get_length() - 1])) {
-				output += operators[operators.get_length() - 1] + " ";
+				output.push_back(operators[operators.get_length() - 1]);
 				operators.delete_last();
 			}
 			operators.add_last(token);
@@ -336,12 +367,12 @@ string infixToRPN(const string& infixExpression) {
 			operators.add_last(token);
 		}
 		else {
-			output += token + " "; // Элемент - число
+			output.push_back(token); // Элемент - число
 		}
 	}
 
 	while (operators.get_length() != 0) {
-		output += operators[operators.get_length() - 1] + " ";
+		output.push_back(operators[operators.get_length() - 1]);
 		operators.delete_last();
 	}
 
@@ -360,8 +391,11 @@ void testspisok() {
 	}
 	cout << "Длина списка: " << lst.get_length() << endl;
 	cout << "Великое деланье завершено" << endl << "А что если..?" << endl << endl;
-
-	lst.insert(3, "добавить масла");
+	lst.add_first("Поперчить");
+	lst.add_last("Поперчить");
+	lst.insert(2, "Поперчить");
+	lst.insert(3, "Добавить масла");
+	lst.insert(4, "Поперчить");
 	for (int i = 0; i < lst.get_length(); i++) {
 		cout << "lst[" << i << "] = " << lst[i] << endl;
 	}
@@ -371,6 +405,7 @@ void testspisok() {
 
 	cout << "Вернем на место" << endl;
 	lst.erase(3);
+	lst.erase_this("Поперчить");
 	for (int i = 0; i < lst.get_length(); i++) {
 		cout << "lst[" << i << "] = " << lst[i] << endl;
 	}
@@ -403,17 +438,22 @@ void testmassiv() {
 		cout << "arr[" << i << "] = " << arr[i] << endl;
 	}
 	cout << "Длина массива:" << arr.size() << endl;
+	cout << "Ха-ха, забавно получилось '':3''"<<endl;
 
 }
 void teststack() {
 	system("cls");
 	string infixExpression = "3 + 2 * ( 1 - sin ( 4 ^ 2 ) ) / 2 + cos ( 3 )";
   	cout << "Тестовая инфиксная строка: " << infixExpression<<endl;
-	string rpnExpression = infixToRPN(infixExpression);
-	cout << "Обратная польская запись: " << rpnExpression << endl<<"Введите собственную строку: ";
+	DinArr<string> rpnExpression = infixToRPN(infixExpression);
+	cout << "Обратная польская запись: ";
+	for (int i = 0; i < rpnExpression.size(); i++) {
+		cout << rpnExpression[i] << " ";
+	}
+	cout<<endl<<"Введите собственную строку: ";
 	getline(cin,infixExpression);
 	rpnExpression = infixToRPN(infixExpression);
-	cout << "Вот ваша строка в обратной польской записи: " << rpnExpression;
+	cout << "Вот ваша строка в обратной польской записи: " << endl;
 }
 
 int main()
