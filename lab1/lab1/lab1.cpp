@@ -44,7 +44,7 @@ public:
 		head = ptr;
 		return ptr->data;
 	}
-	T add_last(T data) {                     //аналогично
+   	T add_last(T data) {                     //аналогично
 		Node<T>* ptr = new Node<T>(data);
 		ptr->prev = tail;
 		if (tail != NULL)
@@ -71,7 +71,9 @@ public:
 
 
 	void delete_last() {//аналогично
-		if (tail == NULL) return;
+		if (tail == NULL) {
+			return;
+		}
 
 		Node<T>* ptr = tail->prev;
 		if (ptr != NULL)
@@ -200,6 +202,9 @@ public:
 			}
 		}
 	}
+	T top() { //в большей мере для упрощения обращения к стеку
+		return tail->data;
+	}
 private:
 	Node<T>* get_node(int index) { //в случае если нужен сам узел, а не данные в нем
 		Node<T>* ptr;              //аналогично get_index
@@ -318,16 +323,20 @@ public:
 		return length;
 	}
 };
-// Проверка, является ли символ оператором
-bool isOperator(const string& token) {
-	return token == "+" || token == "-" || token == "*" || token == "/" || token == "^";
+bool isNumber(const string& str) {
+	for (char c : str) {
+		if (!isdigit(c)) {
+			return false; // Если хотя бы один символ не является цифрой, это не число
+		}
+	}
+	return true; // Все символы - цифры, это число
 }
-
-// Проверка, является ли символ функцией
 bool isFunction(const string& token) {
 	return token == "sin" || token == "cos";
 }
-
+bool isOperator(const string& token) {
+	return token == "+" || token == "-" || token == "*" || token == "/" || token == "^";
+}
 // Определение приоритета оператора
 int getPrecedence(const string& token) {
 	if (token == "+" || token == "-") return 1;
@@ -335,49 +344,57 @@ int getPrecedence(const string& token) {
 	if (token == "^") return 3;
 	return 0; // Для функций и чисел
 }
-
-// Преобразование инфиксного выражения в обратную польскую запись
-//используется двусвязный список в качестве стека
-DinArr<string> infixToRPN(const string& infixExpression) {
-	istringstream iss(infixExpression);
-	List<string> operators; //будет нашим стеком
-	DinArr<string> output; // будет чисто хранить выходные данные
+DinArr<string> sort_algorythm(string expression) { //та самая магическая польская сортировка
+	istringstream iss(expression);
+	List<string> stack; //будет нашим стеком
+	DinArr<string> output; // будет чисто хранить выходные данные очередь вывода типо
 	string token;
+	//stack.add_last("(");
 	while (iss >> token) {
-		if (token == "(") {
-			operators.add_last(token);
-		}
-		else if (token == ")") { //по поводу записи operators[operators.get_length() - 1] 
-			//- это эквивалентно функции top в обычном стеке где мы просто смотрим на самый последний элемент
-			while (operators.get_length() != 0 && operators[operators.get_length() - 1] != "(") {
-				output.push_back(operators[operators.get_length() - 1]);
-				operators.delete_last();
-			}
-			operators.delete_last(); // Удаляем открывающую скобку
-		}
-		else if (isOperator(token)) {
-			while (operators.get_length() != 0 && isOperator(operators[operators.get_length() - 1]) &&
-				getPrecedence(token) <= getPrecedence(operators[operators.get_length() - 1])) {
-				output.push_back(operators[operators.get_length() - 1]);
-				operators.delete_last();
-			}
-			operators.add_last(token);
+		if (isNumber(token)) {
+			output.push_back(token);
 		}
 		else if (isFunction(token)) {
-			operators.add_last(token);
+			stack.add_last(token);
 		}
-		else {
-			output.push_back(token); // Элемент - число
+		else if(0){
+
+		}
+		else if(isOperator(token)){
+			while (stack.get_length() != 0 &&(getPrecedence(stack.top()) >= getPrecedence(token))) {
+				output.push_back(stack.top());
+				stack.delete_last();
+			}
+			stack.add_last(token);
+		}
+		else if (token == "(") {
+			stack.add_last(token);
+		}
+		else if (token == ")") {
+			while (stack.top() != "(") {
+				output.push_back(stack.top());
+				stack.delete_last();
+				if (stack.get_length() == 0) {
+					throw OutOfBoundsException("Ошибка: В выражении пропущена скобка");
+				}
+			}
+			stack.delete_last();
+			if (isFunction(stack.top())) {
+				output.push_back(stack.top());
+				stack.delete_last();
+			}
 		}
 	}
-
-	while (operators.get_length() != 0) {
-		output.push_back(operators[operators.get_length() - 1]);
-		operators.delete_last();
+	while (stack.get_length() != 0 && isOperator(stack.top())) {
+		if (stack.top() == "(") {
+			throw OutOfBoundsException("Ошибка: В выражении пропущена скобка");
+		}
+		output.push_back(stack.top());
+		stack.delete_last();
 	}
-
 	return output;
 }
+
 void testspisok() {
 	system("cls");
 	List<string> lst;
@@ -443,17 +460,21 @@ void testmassiv() {
 }
 void teststack() {
 	system("cls");
-	string infixExpression = "3 + 2 * ( 1 - sin ( 4 ^ 2 ) ) / 2 + cos ( 3 )";
+	string infixExpression = "3 + 2 * ( 1 - ( 4 ^ 2 ) ) / 2 +  3 - 4 * 2 ";
   	cout << "Тестовая инфиксная строка: " << infixExpression<<endl;
-	DinArr<string> rpnExpression = infixToRPN(infixExpression);
+	DinArr < string > arr = sort_algorythm(infixExpression);
 	cout << "Обратная польская запись: ";
-	for (int i = 0; i < rpnExpression.size(); i++) {
-		cout << rpnExpression[i] << " ";
+	for (int i = 0; i < arr.size(); i++) {
+		cout << arr[i]<< " ";
 	}
+
 	cout<<endl<<"Введите собственную строку: ";
 	getline(cin,infixExpression);
-	rpnExpression = infixToRPN(infixExpression);
-	cout << "Вот ваша строка в обратной польской записи: " << endl;
+	DinArr < string > arr2 = sort_algorythm(infixExpression);
+	cout << "Обратная польская запись: ";
+	for (int i = 0; i < arr2.size(); i++) {
+		cout << arr2[i] << " ";
+	}
 }
 
 int main()
