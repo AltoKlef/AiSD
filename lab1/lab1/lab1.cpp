@@ -108,8 +108,8 @@ public:
 	}
 
 	T operator [] (int index) { //перегрузим скобки
-		if (index >= 0 && index < length) {
-			return get_index(index);
+		if (index >= 0 && index < length) { //arr[2]="2"
+			return get_index(index);//get_index =  ptr->data 
 		}
 		else {
 			throw OutOfBoundsException("Error: the index goes beyond the list");
@@ -349,7 +349,6 @@ DinArr<string> sort_algorythm(string expression) { //та самая магич�
 	List<string> stack; //будет нашим стеком
 	DinArr<string> output; // будет чисто хранить выходные данные очередь вывода типо
 	string token;
-	//stack.add_last("(");
 	while (iss >> token) {
 		if (isNumber(token)) {
 			output.push_back(token);
@@ -406,6 +405,7 @@ void testspisok() {
 	for (int i = 0; i < lst.get_length(); i++) {
 		cout << "lst[" << i << "] = " << lst[i] << endl;
 	}
+
 	cout << "Длина списка: " << lst.get_length() << endl;
 	cout << "Великое деланье завершено" << endl << "А что если..?" << endl << endl;
 	lst.add_first("Поперчить");
