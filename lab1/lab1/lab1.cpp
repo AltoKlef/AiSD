@@ -9,7 +9,10 @@ public:
 	OutOfBoundsException(const string& message) : runtime_error(message) {
 		cerr << message;
 	}
-};
+};//это прикол
+
+
+//узел и список
 template <class T>
 class Node {
 public:
@@ -244,6 +247,10 @@ public:
 			delete_first();
 	}
 };
+
+
+
+
 //динамический массив
 template <class T>
 class DinArr {
@@ -364,6 +371,12 @@ public:
 		delete[] arr;
 	}
 };
+
+
+
+
+
+//тут все что связано с алгоритмом сортировки и обратным
 bool isNumber(const string& str) {
 	for (char c : str) {
 		if (!isdigit(c) && c!='.') {
@@ -383,8 +396,10 @@ int getPrecedence(const string& token) {
 	if (token == "+" || token == "-") return 1;
 	if (token == "*" || token == "/") return 2;
 	if (token == "^") return 3;
-	return 0; // Для функций и чисел
+	return 0; 
 }
+
+
 DinArr<string> sort_algorythm(string expression) { //та самая магическая польская сортировка
 	istringstream iss(expression);
 	List<string> stack; //будет нашим стеком
@@ -432,16 +447,17 @@ DinArr<string> sort_algorythm(string expression) { //та самая магич�
 	return output;
 }
 
-double evaluatePostfixExpression(DinArr<string> polska) {
+double calculator(DinArr<string> polska) { //тут обратно из польской записи в число нормальное
 	List<double> stack;
 	string token;
 	for (int i = 0; i < polska.size();i++) {
 		token = polska[i];
 		if (isNumber(token)) {
 			// Если элемент - число, помещаем его в стек
-			stack.add_last(atof(token.c_str()));
-			
+			stack.add_last(atof(token.c_str())); 
+			// единственный момент кода который я не понимаю. функция atof округляет число если оно было дробным. в меньшую сторону
 		}
+		//косинусам отдельное приглашение
 		else if (isFunction(token)) {
 			double operand1 = stack.top();
 			stack.delete_last();
@@ -568,7 +584,7 @@ void teststack() {
 	for (int i = 0; i < arr.size(); i++) {
 		cout << arr[i]<< " ";
 	}
-	cout << endl<<"Результат: " << evaluatePostfixExpression(arr) << endl;
+	cout << endl<<"Результат: " << calculator(arr) << endl;
 	cout<<endl<<"Введите собственную строку (отделяя каждый токен пробелом ): ";
 	getline(cin,infixExpression);
 	DinArr < string > arr2 = sort_algorythm(infixExpression);
@@ -578,11 +594,12 @@ void teststack() {
 	for (int i = 0; i < arr2.size(); i++) {
 		cout << arr2[i] << " ";
 	}
-	cout << endl << "Результат: " << evaluatePostfixExpression(arr2) << endl;
+	cout << endl << "Результат: " << calculator(arr2) << endl;
 }
 
 int main()
 {
+	// лютый интерфейс
 	setlocale(LC_ALL, "ru");
 	testspisok(); 
 	cout << "Нажмите любую кнопку чтобы продолжить";
