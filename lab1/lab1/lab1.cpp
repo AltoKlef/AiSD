@@ -31,6 +31,17 @@ public:
 		head = tail = NULL;
 		length = 0;
 	}
+	List(const List<T>& other) { //конструктор копирования
+		head = tail = NULL;
+		length = 0;
+
+		// Копируем элементы из другого списка
+		Node<T>* current = other.head;
+		while (current != NULL) {
+			add_last(current->data);
+			current = current->next;
+		}
+	}
 	T add_first(T data) { //добавить в начало
 		Node<T>* ptr = new Node<T>(data);
 		ptr->next = head;//указатель на "прошлый" первый объект
@@ -252,14 +263,41 @@ public:
 		capacity = length + 20;
 		arr = new T[capacity];
 	}
+	DinArr(const DinArr<T>& other) {
+		length = other.length;
+		capacity = other.capacity;
+		arr = new T[length];
 
-	~DinArr() {
-		delete[] arr;
+		for (int i = 0; i < length; i++) {
+			arr[i] = other.arr[i];
+		}
 	}
+	DinArr<T>& operator=(const DinArr<T>& other) {
+		if (this == &other) {
+			return *this; // Самоприсваивание, ничего делать не нужно
+		}
+
+		// Очищаем текущий массив
+		delete[] arr;
+
+		// Копируем размер
+		length = other.length;
+
+		// Выделяем память для нового массива
+		arr = new T[length];
+
+		// Копируем элементы из другого массива в этот
+		for (int i = 0; i < length; i++) {
+			arr[i] = other.arr[i];
+		}
+
+		return *this; // Возвращаем *this, чтобы позволить цепочку присваиваний
+	}
+	
 
 	T& operator[](int index) {
 		if (index >= 0 && index < length) {
-			return arr[index];
+			return (arr[index]);
 		}
 		else {
 			throw OutOfBoundsException("Error: accessing uninitialized memory");
@@ -322,10 +360,13 @@ public:
 	int size() const {
 		return length;
 	}
+	~DinArr() {
+		delete[] arr;
+	}
 };
 bool isNumber(const string& str) {
 	for (char c : str) {
-		if (!isdigit(c)) {
+		if (!isdigit(c) && c!='.') {
 			return false; // Если хотя бы один символ не является цифрой, это не число
 		}
 	}
@@ -355,9 +396,6 @@ DinArr<string> sort_algorythm(string expression) { //та самая магич�
 		}
 		else if (isFunction(token)) {
 			stack.add_last(token);
-		}
-		else if(0){
-
 		}
 		else if(isOperator(token)){
 			while (stack.get_length() != 0 &&(getPrecedence(stack.top()) >= getPrecedence(token))) {
@@ -394,6 +432,69 @@ DinArr<string> sort_algorythm(string expression) { //та самая магич�
 	return output;
 }
 
+double evaluatePostfixExpression(DinArr<string> polska) {
+	List<double> stack;
+	string token;
+	for (int i = 0; i < polska.size();i++) {
+		token = polska[i];
+		if (isNumber(token)) {
+			// Если элемент - число, помещаем его в стек
+			stack.add_last(atof(token.c_str()));
+			
+		}
+		else if (isFunction(token)) {
+			double operand1 = stack.top();
+			stack.delete_last();
+			if (token == "cos") {
+				stack.add_last(cos(operand1));
+			}
+			else if (token == "sin") {
+				stack.add_last(sin(operand1));
+			}
+		}
+		else {
+			// Если элемент - оператор, выполняем соответствующее действие
+			double operand2 = stack.top();
+			stack.delete_last();
+			double operand1 = stack.top();
+			stack.delete_last();
+
+			if (token == "+") {
+				stack.add_last((operand1 + operand2));
+			}
+			else if (token == "-") {
+				stack.add_last((operand1 - operand2));
+			}
+			else if (token == "*") {
+				stack.add_last((operand1 * operand2));
+			}
+			else if (token == "/") {
+				if (operand2 != 0) {
+					stack.add_last((operand1 / operand2));
+				}
+				else {
+					cerr << "Ошибка: деление на ноль." << std::endl;
+					return 0.0;
+				}
+			}
+			else if (token == "^") {
+				stack.add_last((pow(operand1, operand2)));
+			}
+		}
+	}
+
+	if (stack.get_length() != 0) {
+		return stack.top();
+	}
+	else {
+		cerr << "Ошибка: неверное выражение." << std::endl;
+		return 0.0;
+	}
+}
+
+
+
+///  тут три функции которые и тестят функционал классов . откройте если хотите увидеть какие методы используются
 void testspisok() {
 	system("cls");
 	List<string> lst;
@@ -460,21 +561,24 @@ void testmassiv() {
 }
 void teststack() {
 	system("cls");
-	string infixExpression = "3 + 2 * ( 1 - ( 4 ^ 2 ) ) / 2 +  3 - 4 * 2 ";
+	string infixExpression = "cos ( 3 - 4 ^ 2 ) + 19 * 3 - 2 / 2";
   	cout << "Тестовая инфиксная строка: " << infixExpression<<endl;
 	DinArr < string > arr = sort_algorythm(infixExpression);
 	cout << "Обратная польская запись: ";
 	for (int i = 0; i < arr.size(); i++) {
 		cout << arr[i]<< " ";
 	}
-
-	cout<<endl<<"Введите собственную строку: ";
+	cout << endl<<"Результат: " << evaluatePostfixExpression(arr) << endl;
+	cout<<endl<<"Введите собственную строку (отделяя каждый токен пробелом ): ";
 	getline(cin,infixExpression);
 	DinArr < string > arr2 = sort_algorythm(infixExpression);
+	
+
 	cout << "Обратная польская запись: ";
 	for (int i = 0; i < arr2.size(); i++) {
 		cout << arr2[i] << " ";
 	}
+	cout << endl << "Результат: " << evaluatePostfixExpression(arr2) << endl;
 }
 
 int main()
