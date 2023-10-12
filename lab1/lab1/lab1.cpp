@@ -249,7 +249,7 @@ public:
 };
 
 
-
+//
 
 //динамический массив
 template <class T>
