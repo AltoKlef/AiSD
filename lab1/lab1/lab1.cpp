@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include <conio.h>
 #include <cmath>
 #include <string>
 #include <sstream>
@@ -248,7 +247,6 @@ public:
 	}
 };
 
-
 //
 
 //динамический массив
@@ -374,12 +372,12 @@ public:
 
 
 
-
+//
 
 //тут все что связано с алгоритмом сортировки и обратным
 bool isNumber(const string& str) {
 	for (char c : str) {
-		if (!isdigit(c) && c!='.') {
+		if (!isdigit(c) && c!='.' && c!=',') {
 			return false; // Если хотя бы один символ не является цифрой, это не число
 		}
 	}
@@ -509,7 +507,6 @@ double calculator(DinArr<string> polska) { //тут обратно из поль
 }
 
 
-
 ///  тут три функции которые и тестят функционал классов . откройте если хотите увидеть какие методы используются
 void testspisok() {
 	system("cls");
@@ -603,10 +600,10 @@ int main()
 	setlocale(LC_ALL, "ru");
 	testspisok(); 
 	cout << "Нажмите любую кнопку чтобы продолжить";
-	char m=_getch();
+	//char m=_getch();
 	testmassiv();
 	cout << "Нажмите любую кнопку чтобы продолжить";
-	m = _getch();
+	//m = _getch();
 	teststack();
 	
 
