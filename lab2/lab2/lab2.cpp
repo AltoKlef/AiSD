@@ -1,20 +1,36 @@
-// lab2.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <stdlib.h> // нужен для вызова функций rand(), srand()
+#include <time.h> // нужен для вызова функции time()
+#include "Tim.h"
+using namespace std;
 
+// Функция генерирования случайного целочисленного числа в указанных пределах.
+// Диапазон чисел: [min, max]
+int GetRandomNumber(int min, int max)
+{
+    int num = min + rand() % (max - min + 1);
+
+    return num;
+}
+template<typename T>
+void randomfill(DinArr<T>& arr, int size, int min, int max) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = GetRandomNumber(min, max);
+    }
+}
+template<typename T>
+void output(DinArr<T> arr) {
+    for (int i = 0; i < arr.size(); i++) {
+        cout << arr[i] << " ";
+    }
+}
 int main()
 {
-    std::cout << "Hello World!\n";
+    srand(time(NULL));
+    DinArr<int> array(10);
+    randomfill(array, array.size(), 1, 400);
+    output(array);
+    cout << "\n";
+    insertion(array, array.size());
+    output(array);
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

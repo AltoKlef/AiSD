@@ -15,6 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Tim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DinArr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DinArr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="lab2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
