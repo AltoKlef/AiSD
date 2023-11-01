@@ -1,0 +1,11 @@
+﻿  lab2.cpp
+C:\Projects\C++\AiSD\lab2\lab2\lab2.cpp(35,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Projects\C++\AiSD\lab2\lab2\Tim.h(70,25): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Projects\C++\AiSD\lab2\lab2\Tim.h(121,36): message : see reference to function template instantiation 'void merge<int>(DinArr<int> &,int,int,int)' being compiled
+C:\Projects\C++\AiSD\lab2\lab2\lab2.cpp(39,31): message : see reference to function template instantiation 'void timSort<int>(DinArr<int> &,int)' being compiled
+C:\Projects\C++\AiSD\lab2\lab2\Tim.h(70,60): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Projects\C++\AiSD\lab2\lab2\Tim.h(76,28): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Projects\C++\AiSD\lab2\lab2\Tim.h(89,25): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Projects\C++\AiSD\lab2\lab2\Tim.h(89,61): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Projects\C++\AiSD\lab2\lab2\Tim.h(95,28): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+  lab2.vcxproj -> C:\Projects\C++\AiSD\lab2\x64\Debug\lab2.exe
