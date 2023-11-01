@@ -5,7 +5,6 @@
 using namespace std;
 
 // Функция генерирования случайного целочисленного числа в указанных пределах.
-// Диапазон чисел: [min, max]
 int GetRandomNumber(int min, int max)
 {
     int num = min + rand() % (max - min + 1);
