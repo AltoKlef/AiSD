@@ -67,8 +67,9 @@ void merge(DinArr<T>& arr, int left, int mid, int right) {//модернизированное сл
         if (leftcount >= 7) { //так называемый галоп если из левого массива берут много элементов подряд
             leftcount = 0;
             int stepen = 0;
-            for (int ii = i + pow(2, stepen); ii< len1;ii=i+pow(2,stepen)) {
+            for (int ii = i + pow(2, stepen); ii< len1;ii=ii+pow(2,stepen)) {
                 if (leftArr[ii] < arr[j]) {
+                    cout << " " << "ii =  " << ii;
                     stepen++;
                 }
                 else {
@@ -86,7 +87,7 @@ void merge(DinArr<T>& arr, int left, int mid, int right) {//модернизированное сл
         if(rightcount >= 7) { //галоп в случае если правый массив (аналогично)
             rightcount = 0;
             int stepen = 0;
-            for (int jj = j + pow(2, stepen); jj< right;jj=j+pow(2,stepen)) {
+            for (int jj = j + pow(2, stepen); jj< right;jj=jj+pow(2,stepen)) {
                 if (arr[jj] < arr[j]) {
                     stepen++;
                 }
