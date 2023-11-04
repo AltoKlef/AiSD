@@ -69,7 +69,7 @@ void merge(DinArr<T>& arr, int left, int mid, int right) {//модернизированное сл
             int stepen = 0;
             for (int ii = i + pow(2, stepen); ii< len1;ii=ii+pow(2,stepen)) {
                 if (leftArr[ii] < arr[j]) {
-                    cout << ii << "  ";
+                 
                     stepen++;
                 }
                 else {
