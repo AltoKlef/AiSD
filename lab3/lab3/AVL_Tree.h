@@ -46,6 +46,8 @@ public:
     T deleteNode(T key);
     AVLNode<T>* search(T key);
 };
+
+
 template <typename T>
 void AVLTree<T>::fill(Node<T>* node) {
     if (node == nullptr)
@@ -54,18 +56,27 @@ void AVLTree<T>::fill(Node<T>* node) {
     fill(node->left);
     fill(node->right);
 }
+
+
 template <typename T>
 int AVLTree<T>::height(AVLNode<T>* node) { //просто вернуть высоту
     if (node == nullptr)
         return 0;
     return node->height;
 }
+
+
+
 template <typename T>
 int AVLTree<T>::balanceFactor(AVLNode<T>* node) {
     if (node == nullptr)
         return 0;
     return height(node->left) - height(node->right);//вычисление баланс фактора
 }
+
+
+
+
 template <typename T>
 AVLNode<T>* AVLTree<T>::rightRotate(AVLNode<T>* p) {
     AVLNode<T>* q = p->left;
