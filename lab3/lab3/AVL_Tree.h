@@ -152,7 +152,7 @@ AVLNode<T>* AVLTree<T>::insert(AVLNode<T>* node, T key) {
 
 
 template <typename T>
-AVLNode<T>* AVLTree<T>::removemin(AVLNode<T>* p) // удаление узла с минимальным ключом из дерева p
+AVLNode<T>* AVLTree<T>::removemin(AVLNode<T>* p) // удаление узла с минимальным ключом из дерева 
 {
     if (p->left == 0)
         return p->right;
@@ -222,7 +222,7 @@ AVLNode<T>* AVLTree<T>::search(AVLNode<T>* node, T key) { //поиск
         return search(node->left, key);
     }
     else {
-        return search(node->right, key);
+        return search(node->right, key);//возвращает узел
     }
 }
 
