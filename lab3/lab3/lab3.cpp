@@ -15,7 +15,7 @@ int main() {
 
     cout << "Your input is: " << input<<endl;
     cout << "output : ";
-    BinaryTree<int> test1(input);
+    BinaryTree<int> test1(input);//тут  сначала создается 3 дерева с ошибками а потом нормальное, и уже оно конвертируется
     test1.recursiveTraversal();
 
 
@@ -42,13 +42,13 @@ int main() {
     cout << endl << "converting to AVL...."<<endl;
     AVLTree<int> avlTree(test4);//создание авл дерева на основе обычного
     cout << "LCR traversal: ";
-    avlTree.LCR();
+    avlTree.LCR();//лево-центр-право
     cout << "CLR traversal: ";
-    avlTree.CLR();
+    avlTree.CLR();//центр-лево-право
     cout << "LRC traversal: ";
-    avlTree.LRC();
+    avlTree.LRC();//лево-право-центр
     cout << "breadth traversal: ";
-    avlTree.breadth();
+    avlTree.breadth();//обход по ширине
 
     /*avlTree.removemin();
     cout << endl<<"LCR traversal: ";
