@@ -65,6 +65,7 @@ void merge(DinArr<T>& arr, int left, int mid, int right) {//модернизированное сл
         }
         k++;
         if (leftcount >= 7) { //так называемый галоп если из левого массива берут много элементов подряд
+
             leftcount = 0;
             int stepen = 0;
             for (int ii = i + pow(2, stepen); ii< len1;ii=ii+pow(2,stepen)) {
