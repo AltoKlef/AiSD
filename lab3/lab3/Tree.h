@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <sstream>
-#include<stack>
+#include <stack>
 #include <queue>
 //узел
 template<typename T>
