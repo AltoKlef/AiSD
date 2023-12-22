@@ -35,7 +35,7 @@ class MyGraph:
         return adjacency_list
 
     def convert_to_incidence_matrix(self):
-        num_vertices = len(self.vertices)
+        num_vertices = len(self.matrix)
         num_edges = sum(sum(1 for weight in row if weight > 0) for row in self.matrix) // 2
 
         incidence_matrix = [[0] * num_edges for _ in range(num_vertices)]
@@ -45,6 +45,7 @@ class MyGraph:
             for j in range(i + 1, num_vertices):
                 if self.matrix[i][j] > 0:
                     incidence_matrix[i][edge_index] = self.matrix[i][j]
+                    incidence_matrix[j][edge_index] = -self.matrix[i][j]
                     edge_index += 1
 
         return incidence_matrix
