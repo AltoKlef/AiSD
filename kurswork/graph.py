@@ -45,7 +45,7 @@ class MyGraph:
             for j in range(i + 1, num_vertices):
                 if self.matrix[i][j] > 0:
                     incidence_matrix[i][edge_index] = self.matrix[i][j]
-                    incidence_matrix[j][edge_index] = -self.matrix[i][j]
+                    incidence_matrix[j][edge_index] = self.matrix[i][j]
                     edge_index += 1
 
         return incidence_matrix
